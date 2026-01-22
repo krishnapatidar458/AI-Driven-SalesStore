@@ -88,8 +88,8 @@ The database follows the **Database-per-Service** pattern, ensuring strict isola
 ### Installation
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/krishnapatidar458/SalesStore-Backend.git](https://github.com/krishnapatidar458/SalesStore-Backend.git)
-    cd SalesStore-Backend
+    git clone [https://github.com/krishnapatidar458/AI-Driven-SalesStore.git](https://github.com/krishnapatidar458/AI-Driven-SalesStore.git)
+    cd AI-Driven-SalesStore
     ```
 
 2.  **Start Infrastructure (Database, Broker, Auth)**
