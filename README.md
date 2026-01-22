@@ -24,7 +24,7 @@ Unlike generic tutorials, this project implements **"Production-First"** pattern
 
 The system follows a **Distributed Microservices Architecture** where the AI Logic is decoupled from the core business logic to ensure scalability.
 
-![System Architecture](docs/system-architecture.jpg)
+![System Architecture](docs/system-architecture.png)
 
 ### **Core Services**
 | Service | Tech Stack | Responsibility |
