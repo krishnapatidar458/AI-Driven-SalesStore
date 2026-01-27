@@ -19,28 +19,39 @@ public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID productId;
 
     @Column(nullable = false)
     private String productName;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT",length = 2000)
     private String description;
+
+    @Column(nullable = false)
     private BigDecimal price;
-    private boolean active;
+
+    private boolean active = true;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id",nullable = false)
     private Category category;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<Variant> variants;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product",
+            cascade = CascadeType.ALL
+    )
     private List<ProductImage> productImages;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
-    @@UpdateTimestamp
+
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+
 }
