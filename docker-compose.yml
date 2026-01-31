@@ -12,6 +12,20 @@ services:
     networks:
       - salesstore-net
 
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - discovery-server
+      - keycloak
+    networks:
+      - salesstore-net
+
+
   product-service:
     build: ./product-service
     container_name: product-service
@@ -165,12 +179,23 @@ services:
     networks:
       - salesstore-net
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: salesstore-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama # Persist models (so you don't download 4GB every restart)
+    networks:
+      - salesstore-net
+
 # Persistent Storage
 volumes:
   postgres_data:
   vector_data:
   minio_data:
   redis_data:
+  ollama_data:
 
 networks:
   salesstore-net:
