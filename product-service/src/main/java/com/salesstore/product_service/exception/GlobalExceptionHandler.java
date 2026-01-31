@@ -1,4 +1,4 @@
-package com.salesstore.product_service.exception.ResourceNotFoundException;
+package com.salesstore.product_service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

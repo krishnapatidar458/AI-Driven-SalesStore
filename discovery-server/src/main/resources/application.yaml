@@ -1,9 +1,15 @@
 server:
   port: 8761
 
+spring:
+  config:
+    activate:
+      on-profile: local
+
 eureka:
   instance:
     hostname: localhost
+
   client:
     registerWithEureka: false
     fetchRegistry: false

@@ -1,4 +1,4 @@
-package com.salesstore.product_service.request;
+package com.salesstore.product_service.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

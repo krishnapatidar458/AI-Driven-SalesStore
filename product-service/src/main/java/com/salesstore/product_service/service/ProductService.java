@@ -1,12 +1,21 @@
 package com.salesstore.product_service.service;
 
-import com.salesstore.product_service.request.CreateProductRequest;
-import com.salesstore.product_service.response.ProductResponse;
+import com.salesstore.product_service.dto.request.CreateProductRequest;
+import com.salesstore.product_service.dto.request.ProductSearchCriteria;
+import com.salesstore.product_service.dto.response.PagedResponse;
+import com.salesstore.product_service.dto.response.ProductResponse;
+import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface ProductService {
-    UUID createProduct(CreateProductRequest createProductRequest, List<MultipartFile> images);
+    ProductResponse createProduct(CreateProductRequest createProductRequest, List<MultipartFile> images);
+
+    ProductResponse getProductById(@Valid UUID productId);
+
+    void deleteProduct(UUID productId);
+
+    PagedResponse<ProductResponse> searchProducts(ProductSearchCriteria criteria);
 }

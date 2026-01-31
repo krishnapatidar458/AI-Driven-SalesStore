@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: product-service
+
+  jpa:
+    open-in-view: false

@@ -1,14 +1,16 @@
 package com.salesstore.product_service.controller;
 
-import com.salesstore.product_service.repository.ProductRepository;
-import com.salesstore.product_service.request.CreateProductRequest;
-import com.salesstore.product_service.response.ProductResponse;
+import com.salesstore.product_service.dto.request.CreateProductRequest;
+import com.salesstore.product_service.dto.request.ProductSearchCriteria;
+import com.salesstore.product_service.dto.response.PagedResponse;
+import com.salesstore.product_service.dto.response.ProductResponse;
 import com.salesstore.product_service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Cascade;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,16 +24,33 @@ public class ProductController {
 
     private final ProductService productService;
 
-    private final ProductRepository productRepository;
-
     @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<UUID> addProduct(
-            @RequestPart("product") CreateProductRequest createProductRequest,
-            @RequestPart("images") List<MultipartFile> images) {
+    public ResponseEntity<ProductResponse> createProduct(
+         @Valid   @RequestPart("product") CreateProductRequest createProductRequest,
+         @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
-        UUID productId = productService.createProduct(createProductRequest, images);
-        return new ResponseEntity<>(productId, HttpStatus.CREATED);
+        ProductResponse productResponse = productService.createProduct(createProductRequest, images);
+        return new ResponseEntity<>(productResponse, HttpStatus.CREATED);
     }
+
+    @GetMapping("/{productId}")
+    private ResponseEntity<ProductResponse> getProductById(@Valid @PathVariable UUID productId) {
+        return ResponseEntity.ok(productService.getProductById(productId));
+    }
+
+    @DeleteMapping("{productId}")
+    private ResponseEntity<Void> deleteProductById(@PathVariable UUID productId){
+        productService.deleteProduct(productId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<PagedResponse<ProductResponse>>  searchProducts(
+            @ModelAttribute ProductSearchCriteria criteria) {
+        PagedResponse<ProductResponse> response = productService.searchProducts(criteria);
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/health")
     public String healthCheck() {
