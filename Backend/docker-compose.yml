@@ -1,0 +1,202 @@
+name: salesstore-infra
+
+services:
+
+  discovery-server:
+    build: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    networks:
+      - salesstore-net
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - discovery-server
+      - keycloak
+    networks:
+      - salesstore-net
+
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - discovery-server
+      - salesstore-db
+      - redis
+      - kafka
+    networks:
+      - salesstore-net
+
+  # ----------------------------------------------------------------
+  # 1. CORE BUSINESS DATABASE (Matches 'Core Business Services' in HLD)
+  # Hosting: Product DB, Order DB, Inventory DB
+  # Image: Alpine (Lightweight, Fast)
+  # Port: 5432
+  # ----------------------------------------------------------------
+  salesstore-db:
+    image: postgres:16-alpine
+    container_name: salesstore-postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/core:/docker-entrypoint-initdb.d # Auto-create product_db, order_db
+    networks:
+      - salesstore-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------------
+  # 2. INTELLIGENCE LAYER DATABASE (Matches 'Intelligence Layer' in HLD)
+  # Hosting: Vector Store (Embeddings)
+  # Image: pgvector (Debian-based for AI stability)
+  # Port: 5433 (Mapped to avoid conflict)
+  # ----------------------------------------------------------------
+  vector-db:
+    image: pgvector/pgvector:pg16
+    container_name: salesstore-vector-db
+    ports:
+      - "5433:5432" # External 5433 -> Internal 5432
+    environment:
+      POSTGRES_DB: vector_store
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - vector_data:/var/lib/postgresql/data
+    networks:
+      - salesstore-net
+
+  # ----------------------------------------------------------------
+  # 3. IDENTITY PROVIDER (Matches 'Keycloak IdP' in HLD)
+  # ----------------------------------------------------------------
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.3
+    container_name: salesstore-keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://salesstore-db:5432/keycloak_db
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080" # Exposed on 8180 to save 8080 for Gateway
+    depends_on:
+      salesstore-db:
+        condition: service_healthy
+    networks:
+      - salesstore-net
+
+  # ----------------------------------------------------------------
+  # 4. MESSAGE BROKER (Matches 'Kafka' in HLD)
+  # ----------------------------------------------------------------
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: salesstore-kafka
+    ports:
+      - "9092:9092"
+    environment:
+      CLUSTER_ID: 5H-cUk1FRJCVBj5_pu7uLQ
+
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    networks:
+      - salesstore-net
+
+
+  # ----------------------------------------------------------------
+  # 5. OBJECT STORAGE (Matches 'MinIO' in HLD)
+  # ----------------------------------------------------------------
+  minio:
+    image: minio/minio:RELEASE.2024-01-11T07-46-16Z
+    container_name: salesstore-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000" # API
+      - "9001:9001" # Console
+    volumes:
+      - minio_data:/data
+    networks:
+      - salesstore-net
+
+  # ----------------------------------------------------------------
+  # 6. CACHING (Matches 'Redis Cache' in HLD)
+  # ----------------------------------------------------------------
+  redis:
+    image: redis:alpine
+    container_name: salesstore-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - salesstore-net
+
+  # ----------------------------------------------------------------
+  # 7. OBSERVABILITY (Matches 'Zipkin' in HLD)
+  # ----------------------------------------------------------------
+  zipkin:
+    image: openzipkin/zipkin:2.24
+    container_name: salesstore-zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - salesstore-net
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: salesstore-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama # Persist models (so you don't download 4GB every restart)
+    networks:
+      - salesstore-net
+
+# Persistent Storage
+volumes:
+  postgres_data:
+  vector_data:
+  minio_data:
+  redis_data:
+  ollama_data:
+
+networks:
+  salesstore-net:
+    driver: bridge
