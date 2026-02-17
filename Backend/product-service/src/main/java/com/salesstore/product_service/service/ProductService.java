@@ -1,8 +1,8 @@
 package com.salesstore.product_service.service;
 
+import com.salesstore.dto.PagedResponse;
 import com.salesstore.product_service.dto.request.CreateProductRequest;
 import com.salesstore.product_service.dto.request.ProductSearchCriteria;
-import com.salesstore.product_service.dto.response.PagedResponse;
 import com.salesstore.product_service.dto.response.ProductResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;

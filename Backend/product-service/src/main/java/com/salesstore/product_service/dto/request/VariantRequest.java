@@ -1,6 +1,5 @@
 package com.salesstore.product_service.dto.request;
 
-import com.salesstore.product_service.model.Product;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

@@ -1,0 +1,39 @@
+server:
+  port: 8083
+
+spring:
+  config:
+    activate:
+      on-profile: local
+  application:
+    name: order-service
+  datasource:
+    url: jdbc:postgresql://localhost:5434/order_db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      inventory: # This name matches the annotation in the code
+        registerHealthIndicator: true
+        slidingWindowSize: 10 # Check last 10 calls
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowType: COUNT_BASED
+        minimumNumberOfCalls: 5
+        waitDurationInOpenState: 5s # Wait 5 seconds before trying again
+        failureRateThreshold: 50 # Trip if 50% of calls fail
+        eventConsumerBufferSize: 10
+
+  retry:
+    instances:
+      inventory:
+        maxAttempts: 3 # Try 3 times before giving up
+        waitDuration: 1s # Wait 1 second between retries
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/

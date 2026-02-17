@@ -32,6 +32,9 @@ spring:
   kafka:
     bootstrap-servers: salesstore-kafka:9092
     producer:
+      retries: 3
+      properties:
+        delivery.timeout.ms: 3000
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 

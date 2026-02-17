@@ -9,9 +9,9 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableCaching
-@EnableRedisRepositories(
-		basePackages = "com.salesstore.product_service.redis"
-)
+//@EnableRedisRepositories(
+//		basePackages = "com.salesstore.product_service.redis"
+//)
 public class ProductServiceApplication {
 
 	public static void main(String[] args) {

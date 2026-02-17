@@ -30,19 +30,30 @@ spring:
       time-to-live: 600000
 
 
-  kafka:
-    bootstrap-servers: localhost:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  spring:
+    kafka:
+      bootstrap-servers: localhost:9092
+      producer:
+        retries: 3
+        linger-ms: 0
+        request-timeout-ms: 30000
+        delivery-timeout-ms: 30000
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 
 minio:
   endpoint: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
+  access-key: LUfCUFejzJoGxyKh8dZQ
+  secret-key: IkpeWolAamdD5aa07dXoq9kXOc4EaQDUvbbLo1Lj
   bucket-name: products
 
 eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+
+logging:
+  level:
+    root: INFO
+    com.salesstore.productservice: DEBUG

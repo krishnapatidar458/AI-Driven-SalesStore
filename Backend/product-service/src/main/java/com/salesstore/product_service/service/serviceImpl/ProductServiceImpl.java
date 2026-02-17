@@ -1,8 +1,8 @@
 package com.salesstore.product_service.service.serviceImpl;
 
+import com.salesstore.dto.PagedResponse;
+import com.salesstore.event.ProductAddedEvent;
 import com.salesstore.product_service.dto.request.ProductSearchCriteria;
-import com.salesstore.product_service.dto.response.PagedResponse;
-import com.salesstore.product_service.event.ProductAddedEvent;
 import com.salesstore.product_service.exception.ResourceNotFoundException;
 import com.salesstore.product_service.model.Category;
 import com.salesstore.product_service.model.Product;

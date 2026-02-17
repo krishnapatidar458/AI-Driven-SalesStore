@@ -1,14 +1,12 @@
 package com.salesstore.product_service.controller;
 
+import com.salesstore.dto.PagedResponse;
 import com.salesstore.product_service.dto.request.CreateProductRequest;
 import com.salesstore.product_service.dto.request.ProductSearchCriteria;
-import com.salesstore.product_service.dto.response.PagedResponse;
 import com.salesstore.product_service.dto.response.ProductResponse;
 import com.salesstore.product_service.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Cascade;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,7 +48,6 @@ public class ProductController {
         PagedResponse<ProductResponse> response = productService.searchProducts(criteria);
         return ResponseEntity.ok(response);
     }
-
 
     @GetMapping("/health")
     public String healthCheck() {

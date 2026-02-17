@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 @Data
 public class ProductSearchCriteria {
-    private String Query;
+    private String query;
     private Long categoryId;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;

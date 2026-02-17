@@ -31,7 +31,7 @@ public class ProductSpecification {
             }
 
             if(productSearchCriteria.getCategoryId() != null){
-                predicates.add(criteriaBuilder.equal(root.get("category").get("id"), productSearchCriteria.getCategoryId()));
+                predicates.add(criteriaBuilder.equal(root.get("category").get("categoryId"), productSearchCriteria.getCategoryId()));
             }
 
             if(productSearchCriteria.getActive() != null){

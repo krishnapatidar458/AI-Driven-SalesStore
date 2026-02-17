@@ -30,7 +30,7 @@ public class Category {
     private Category parentCategory;
 
     @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
-    private List<Category> subCategories;
+    private List<Category> subCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "category")
     private List<Product> products;

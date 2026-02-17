@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
-@Table(name = "variants")
+@Table(name = "variants", indexes = {@Index(name = "idx_variant_sku", columnList = "sku")})
 public class Variant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

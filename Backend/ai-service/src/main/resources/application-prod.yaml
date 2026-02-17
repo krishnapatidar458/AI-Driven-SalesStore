@@ -1,0 +1,39 @@
+server:
+  port: 8084
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  application:
+    name: ai-service
+
+  datasource:
+    url: jdbc:postgresql://salesstore-vector-db:5432/vector_store
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  ai:
+    ollama:
+      base-url: http://salesstore-ollama:11434
+      embedding:
+        model: nomic-embed-text # High performance embedding model
+    vectorstore:
+      pgvector:
+        index-type: HNSW # High-speed search index
+        distance-type: COSINE_DISTANCE
+        dimensions: 768 # Match nomic-embed-text dimensions
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: ai-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"

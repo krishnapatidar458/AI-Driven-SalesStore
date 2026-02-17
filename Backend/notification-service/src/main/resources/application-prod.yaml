@@ -1,0 +1,22 @@
+server:
+  port: 8085
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  application:
+    name: notification-service
+  kafka:
+    bootstrap-servers: salesstore-kafka:9092
+    consumer:
+      group-id: notification-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/

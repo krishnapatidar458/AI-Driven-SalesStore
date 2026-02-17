@@ -21,12 +21,10 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private static final String CATEGORY_CACHE = "categories";
-
 
     @Override
     @Transactional
-    @CacheEvict(value = "CATEGORY_CACHE", allEntries = true)
+    @CacheEvict(value = "categories", allEntries = true)
     public CategoryResponse createCategory(CategoryRequest categoryRequest) {
         Category category = new Category();
         category.setCategoryName(categoryRequest.getName());
@@ -58,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = "CATEGORY_CACHE", key = "'allCategories'")
+    @Cacheable(value = "categories", key = "'allCategories'")
     public List<CategoryResponse> getAllCategories() {
         return categoryRepository.findAll()
                 .stream()
@@ -67,7 +65,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    @Cacheable(value = "CATEGORY_CACHE", key = "#categoryId")
+    @Cacheable(value = "categories", key = "#categoryId")
     public CategoryResponse getCategoryById(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
