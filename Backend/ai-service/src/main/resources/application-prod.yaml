@@ -30,10 +30,22 @@ spring:
         dimensions: 768 # Match nomic-embed-text dimensions
 
   kafka:
-    bootstrap-servers: localhost:9092
-    consumer:
-      group-id: ai-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    bootstrap-servers: salesstore-kafka:9092
+    producer:
+      retries: 3
       properties:
-        spring.json.trusted.packages: "*"
+        delivery.timeout.ms: 3000
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      observation-enabled: true
+    template:
+      observation-enabled: true
+
+  management:
+    tracing:
+      sampling:
+        probability: 1.0
+    zipkin:
+      tracing:
+        endpoint: http://salesstore-zipkin:9411/api/v2/spans

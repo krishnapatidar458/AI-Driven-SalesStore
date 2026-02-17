@@ -7,14 +7,39 @@ spring:
       on-profile: prod
   application:
     name: notification-service
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: umeshkumar5332259@gmail.com
+    password: krishnapatidar
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   kafka:
     bootstrap-servers: salesstore-kafka:9092
-    consumer:
-      group-id: notification-group
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    producer:
+      retries: 3
       properties:
-        spring.json.trusted.packages: "*"
+        delivery.timeout.ms: 3000
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      observation-enabled: true
+    template:
+      observation-enabled: true
+
+  management:
+    tracing:
+      sampling:
+        probability: 1.0
+    zipkin:
+      tracing:
+        endpoint: http://salesstore-zipkin:9411/api/v2/spans
 
 eureka:
   client:

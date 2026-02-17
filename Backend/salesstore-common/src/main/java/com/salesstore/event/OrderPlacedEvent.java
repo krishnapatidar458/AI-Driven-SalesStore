@@ -9,5 +9,6 @@ import java.util.List;
 @AllArgsConstructor @NoArgsConstructor
 public class OrderPlacedEvent {
     private String orderId;
+    private String email;
     private List<OrderItemEvent> items;
 }

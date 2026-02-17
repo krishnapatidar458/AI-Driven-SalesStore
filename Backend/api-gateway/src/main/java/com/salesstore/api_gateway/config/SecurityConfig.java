@@ -28,11 +28,15 @@ public class SecurityConfig {
 
                         .pathMatchers(HttpMethod.GET, "/api/v1/orders/**").permitAll()
                         .pathMatchers(HttpMethod.GET,"/api/v1/inventory/**").permitAll()
-                        .pathMatchers(HttpMethod.GET,"/api/v1/ai").permitAll()
+                        .pathMatchers(HttpMethod.GET,"/api/v1/ai/**").permitAll()
 
                         .pathMatchers(HttpMethod.POST, "/api/v1/products/**").hasRole("SELLER")
                         .pathMatchers(HttpMethod.PUT, "/api/v1/products/**").hasRole("SELLER")
                         .pathMatchers(HttpMethod.DELETE, "/api/v1/products/**").hasRole("SELLER")
+
+                        .pathMatchers(HttpMethod.POST, "/api/v1/inventory/**").hasRole("SELLER")
+                        .pathMatchers(HttpMethod.PUT, "/api/v1/inventory/**").hasRole("SELLER")
+                        .pathMatchers(HttpMethod.DELETE, "/api/v1/inventory/**").hasRole("SELLER")
 
                         .pathMatchers(HttpMethod.POST, "/api/v1/categories/**").hasRole("ADMIN")
                         .pathMatchers(HttpMethod.PUT, "/api/v1/categories/**").hasRole("ADMIN")

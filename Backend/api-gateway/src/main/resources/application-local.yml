@@ -15,6 +15,14 @@ spring:
 
 
   cloud:
+    loadbalancer:
+      cache:
+        enabled: true
+        caffeine:
+          spec: initialCapacity=10,maximumSize=500,expireAfterWrite=5s
+      health-check:
+        refetch-instances: true
+        refetch-instances-interval: 5s
     gateway:
       server:
         webflux:

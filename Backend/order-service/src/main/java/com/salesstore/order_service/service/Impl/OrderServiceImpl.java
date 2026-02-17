@@ -58,7 +58,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("Order saved with ID: {}", savedOrder.getId());
 
         // 3. ASYNC: Emit Kafka event for Inventory reduction
-        kafkaTemplate.send("order-placed-topic", mapToEvent(savedOrder));
+        kafkaTemplate.send("order-placed-topic", mapToEvent(savedOrder, request.getEmail()));
         log.info("OrderPlacedEvent emitted to Kafka for order: {}", savedOrder.getId());
 
         return new OrderResponse(savedOrder.getId(), savedOrder.getTotalAmount(), savedOrder.getStatus());
@@ -106,11 +106,11 @@ public class OrderServiceImpl implements OrderService {
     /**
      * MAPPING: Converts saved Entity to Kafka Event DTO.
      */
-    private OrderPlacedEvent mapToEvent(Order savedOrder) {
+    private OrderPlacedEvent mapToEvent(Order savedOrder, String email) {
         List<OrderItemEvent> itemEvents = savedOrder.getOrderItems().stream()
                 .map(i -> new OrderItemEvent(i.getSku(), i.getQuantity()))
                 .collect(Collectors.toList());
 
-        return new OrderPlacedEvent(savedOrder.getId().toString(), itemEvents);
+        return new OrderPlacedEvent(savedOrder.getId().toString(),email, itemEvents);
     }
 }

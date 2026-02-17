@@ -37,6 +37,19 @@ spring:
         delivery.timeout.ms: 3000
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    listener:
+      observation-enabled: true
+    template:
+      observation-enabled: true
+
+management:
+    tracing:
+        sampling:
+            probability: 1.0
+    zipkin:
+        tracing:
+            endpoint: http://salesstore-zipkin:9411/api/v2/spans
+
 
 minio:
   endpoint: http://salesstore-minio:9000
